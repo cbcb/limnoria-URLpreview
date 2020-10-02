@@ -33,12 +33,13 @@ These can be installed with pip like this
 
 
 # Configuration variables
-| Name              | Type    | Scope       | Description                                                    |
-|-------------------|---------|-------------|----------------------------------------------------------------|
-| `enabled`         | Boolean | per channel | controls if the plugin is enabled for the channel              |
-| `twitter_enabled` | Boolean | global      | controls if the `twitter` previewer is enabled                 |
-| `twitter_api_key` | String  | global      | holds the Twitter API OAuth 2.0 Bearer token required for the `twitter` extractor |
-| `youtube_enabled` | Boolean | global      | controls if the `youtube` previewer is enabled (not yet implemented) |
+| Name              | Type    | Scope   | Default | Description                                                                       |
+|-------------------|---------|---------|---------|-----------------------------------------------------------------------------------|
+| `enabled`         | Boolean | channel | `True`  | controls if the plugin is enabled for the channel                                 |
+| `generic_enabled` | Boolean | global  | `True`  | controls if the `generic` previewer is enabled                                    |
+| `twitter_enabled` | Boolean | global  | `False` | controls if the `twitter` previewer is enabled                                    |
+| `twitter_api_key` | String  | global  | `""`    | holds the Twitter API OAuth 2.0 Bearer token required for the `twitter` extractor |
+| `youtube_enabled` | Boolean | global  | `False` | controls if the `youtube` previewer is enabled (not yet implemented)              |
 
 # Limitations
 

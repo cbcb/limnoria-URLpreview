@@ -75,7 +75,8 @@ class URLpreview(callbacks.Plugin):
                 # token = self.registryValue('twitter_api_token')
                 result = youtube.handle(url)
         elif generic.can_handle(domain):
-            result = generic.handle(url)
+            if self.registryValue('generic_enabled'):
+                result = generic.handle(url)
         else:
             result = None
 

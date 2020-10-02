@@ -59,6 +59,12 @@ conf.registerChannelValue(
     URLpreview, 'enabled',
     registry.Boolean(True, _('enable for this channel')))
 
+# Generic
+conf.registerGlobalValue(
+    URLpreview, 'generic_enabled',
+    registry.Boolean(True, _('Enable generic (main) previewer?')))
+
+
 # Twitter
 conf.registerGlobalValue(
     URLpreview, 'twitter_enabled',
