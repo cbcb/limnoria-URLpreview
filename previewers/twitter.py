@@ -39,7 +39,8 @@ from supybot import log
 try:
     from humanize import naturaltime
 except ImportError:
-    def naturaltime(x): return x
+    def naturaltime(x):
+        return x
 
 
 def can_handle(domain):
@@ -51,23 +52,22 @@ def handle(url, token):
     # negative lookbehind to exclude sub-pages like …status/123/likes
     status_pattern = re.compile(r'twitter.com/\w+/status/(\d+)(?!.*/\w+)')
     status_id = status_pattern.search(url)
-    if(status_id is not None):
-        id = status_id.group(1)
-        preview = get_status(id, token)
+    if status_id is not None:
+        preview = get_status(status_id.group(1), token)
         if preview is None:
-            return
+            return None
         return preview
-    else:
-        # We found no status/tweet URL, but maybe still a twitter profile?
-        # Look for status (tweet) URL
-        # negative lookbehind to exclude urls like twitter.com/foo/likes
-        profile_pattern = re.compile(r'twitter.com/(\w+)(?!.*/\w+)')
-        handle = profile_pattern.search(url)
-        if(handle is not None):
-            profile_info = get_profile(handle.group(1), token)
-            if profile_info is None:
-                return
-            return profile_info
+    # We found no status/tweet URL, but maybe still a twitter profile?
+    # Look for status (tweet) URL
+    # negative lookbehind to exclude urls like twitter.com/foo/likes
+    profile_pattern = re.compile(r'twitter.com/(\w+)(?!.*/\w+)')
+    handle = profile_pattern.search(url)
+    if handle is not None:
+        profile_info = get_profile(handle.group(1), token)
+        if profile_info is None:
+            return None
+        return profile_info
+    return None
 
 
 def format_author(name, username, verified):
@@ -139,11 +139,11 @@ def get_profile(user, token):
            % (author, description, tweet_count, followers_count)
 
 
-def get_status(id, token):
+def get_status(tweet_id, token):
     headers = {'Authorization': 'Bearer %s' % token}
     # Twitter API wants value lists to be comma separated , but requests lib
     # urlencodes commas – so we build the URL by hand
-    url = 'https://api.twitter.com/2/tweets/%s' % id
+    url = 'https://api.twitter.com/2/tweets/%s' % tweet_id
     url += '?tweet.fields=created_at'
     url += '&expansions=author_id&user.fields=username,verified'
     r = requests.get(url, headers=headers)

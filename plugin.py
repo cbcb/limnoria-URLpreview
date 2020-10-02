@@ -30,11 +30,6 @@
 
 import regex as re
 
-# Optional support for humanize
-try:
-    from humanize import naturaltime
-except ImportError:
-    def naturaltime(x): return x
 
 from supybot import callbacks, ircmsgs  # utils, plugins, ircutils,
 
@@ -44,12 +39,13 @@ try:
 except ImportError:
     # Placeholder that allows to run the plugin on a bot
     # without the i18n module
-    def _(x): return x
+    def _(x):
+        return x
 
 from .previewers import generic, twitter, youtube
 
 
-class URLpreview(callbacks.Plugin):
+class URLpreview(callbacks.Plugin):  # pylint: disable=too-many-ancestors
     """This plugin looks for URLs posted to channels and responds with
     a preview of the content"""
     threaded = True
@@ -93,7 +89,7 @@ def find_url(text):
         + r'|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
     match = url_pattern.search(text)
     if match is None:
-        return
+        return None
     return match.group(0)
 
 

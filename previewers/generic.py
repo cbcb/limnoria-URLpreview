@@ -39,8 +39,8 @@ try:
 except ImportError:
     def naturaltime(x): return x
 
+from supybot import log
 
-# from supybot import log
 
 MAX_SIZE = 5 * 1024 * 1024
 TIMEOUT = 10
@@ -59,13 +59,14 @@ DOMAIN_BLACKLIST = [
     'invalid',
     'example',
     'test',
-    # Extractors are available for these:
+    # Previewers are available for these:
     'twitter.com',
     't.co',
     'youtube.com',
     'youtu.be',
     # Add other non-working domains below:
     'blog.fefe.de',
+    'outline.com',
 ]
 
 
@@ -80,14 +81,16 @@ def handle(url):
     except requests.exceptions.SSLError:
         secure = False
     except Exception as e:
-        print(repr(e))
+        log.info('URLpreview.generic.handle: trying "%s", exception %s' %
+                 (url, repr(e)))
         return
     # Retry without verification?
     if ATTEMPT_INSECURE and not secure:
         try:
             r = download(url, False)
         except Exception as e:
-            print(repr(e))
+            log.info('URLpreview.generic.handle: trying "%s", exception %s' %
+                     (url, repr(e)))
             return
 
     if not r.headers['content-type'].startswith('text/html'):
@@ -215,9 +218,3 @@ def is_domain_blacklisted(domain):
         if domain.endswith(blacklisted_domain):
             return True
     return False
-
-
-if __name__ == "__main__":
-    while(True):
-        url = input('Enter url')
-        print(repr(handle(url)))
