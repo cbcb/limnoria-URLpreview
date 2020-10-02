@@ -181,7 +181,8 @@ def format_msg(secure, meta):
         return
     msg = 'Preview: '
     if not secure:
-        msg += '⚠️ \x02\x0352,98Insecure\x0f '
+        # Color codes: 98,52: White on Red background
+        msg += '⚠️ \x02\x0398,52Insecure\x0f '
     msg += '\x02%s\x02' % title[:140]
     if len(title) >= 140:
         msg += '…'
