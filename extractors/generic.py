@@ -45,6 +45,8 @@ except ImportError:
 MAX_SIZE = 5 * 1024 * 1024
 TIMEOUT = 10
 ATTEMPT_INSECURE = True
+MAX_TITLE_LENGTH = 140
+MAX_DESC_LENGTH = 280
 
 HEADERS = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0)' +
            'Gecko/20100101 Firefox/81.0'}
@@ -183,12 +185,12 @@ def format_msg(secure, meta):
     if not secure:
         # Color codes: 98,52: White on Red background
         msg += '⚠️ \x02\x0398,52Insecure\x0f '
-    msg += '\x02%s\x02' % title[:140]
-    if len(title) >= 140:
+    msg += '\x02%s\x02' % title[:MAX_TITLE_LENGTH]
+    if len(title) > MAX_TITLE_LENGTH:
         msg += '…'
     if desc is not None:
-        msg += ' ' + desc[0:280]
-        if len(desc) >= 280:
+        msg += ' ' + desc[:MAX_DESC_LENGTH]
+        if len(desc) > MAX_DESC_LENGTH:
             msg += '…'
     if date is not None:
         msg += ' (%s)' % humanize_time(date)
