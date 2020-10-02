@@ -46,7 +46,7 @@ except ImportError:
     # without the i18n module
     def _(x): return x
 
-from .extractors import generic, twitter, youtube
+from .previewers import generic, twitter, youtube
 
 
 class URLpreview(callbacks.Plugin):

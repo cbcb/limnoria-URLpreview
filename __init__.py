@@ -37,7 +37,7 @@ import sys
 import supybot
 from supybot import world
 
-from .extractors import generic, twitter, youtube
+from .previewers import generic, twitter, youtube
 
 # Use this for the version of this plugin.
 __version__ = '0.1'
