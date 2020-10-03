@@ -53,6 +53,8 @@ except ImportError:
     def naturaltime(x):
         return x
 
+TIMEOUT = 10
+
 
 class TwitterPreview(Previewer):
 
@@ -142,7 +144,7 @@ def get_profile(user, token):
     # urlencodes commas – so we build the URL by hand
     url = 'https://api.twitter.com/2/users/by/username/' + user
     url += '?user.fields=description,public_metrics,verified'
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, headers=headers, timeout=TIMEOUT)
     if r.status_code != 200:
         log.error('twitter.get_profile: call to API ' +
                   'unsuccesful, HTTP status code ' + str(r.status_code))
@@ -179,7 +181,7 @@ def get_status(tweet_id, token):
     url = 'https://api.twitter.com/2/tweets/%s' % tweet_id
     url += '?tweet.fields=created_at'
     url += '&expansions=author_id&user.fields=username,verified'
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, headers=headers, timeout=TIMEOUT)
     if r.status_code != 200:
         log.error('twitter.get_status: call to API ' +
                   'unsuccesful, HTTP status code ' + str(r.status_code))
