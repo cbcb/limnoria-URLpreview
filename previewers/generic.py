@@ -68,6 +68,8 @@ DOMAIN_BLACKLIST = [
     # Add other non-working domains below:
     'blog.fefe.de',
     'outline.com',
+    'washingtonpost.com',
+    'zeit.de',
 ]
 
 
