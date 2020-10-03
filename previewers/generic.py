@@ -42,11 +42,12 @@ except ImportError:
 from supybot import log
 
 
-MAX_SIZE = 5 * 1024 * 1024
-TIMEOUT = 10
-ATTEMPT_INSECURE = True
-MAX_TITLE_LENGTH = 140
-MAX_DESC_LENGTH = 280
+MAX_SIZE = 1 * 1024 * 1024  # Max size to download per attempt in bytes
+TIMEOUT = 10                # Timeout per attempt in seconds
+ATTEMPT_INSECURE = True     # Should a connection that fails because of
+#                             certificate validation be retried?
+MAX_TITLE_LENGTH = 140      # length after which the title will be cut
+MAX_DESC_LENGTH = 280       # length after which the description will be cut
 
 HEADERS = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0)' +
            'Gecko/20100101 Firefox/81.0'}
@@ -115,7 +116,7 @@ def download(url, verify=True):
     data = []
     length = 0
 
-    for chunk in r.iter_content(1024):
+    for chunk in r.iter_content(100*1024):
         data.append(chunk)
         length += len(chunk)
         if length > MAX_SIZE:
