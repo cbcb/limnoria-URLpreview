@@ -55,3 +55,7 @@ from the general internet, it might be possible for a user to trick it into doin
 # Useful links
 
 * https://modern.ircdocs.horse/formatting.html
+
+# Acknowledgments
+
+Loading of the previewers is based on Guido Diepen's blog post [Implementing a simple plugin framework in Python](https://www.guidodiepen.nl/2019/02/implementing-a-simple-plugin-framework-in-python/). Thank you!

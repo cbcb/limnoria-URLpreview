@@ -42,13 +42,18 @@ except ImportError:
     def _(x):
         return x
 
-from .previewers import generic, twitter, youtube
+from .previewers import generic
+from .previewer import PreviewerCollection
 
 
 class URLpreview(callbacks.Plugin):  # pylint: disable=too-many-ancestors
     """This plugin looks for URLs posted to channels and responds with
     a preview of the content"""
     threaded = True
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.previewers = PreviewerCollection()
 
     def doPrivmsg(self, irc, msg):
         channel = msg.args[0]
@@ -60,26 +65,20 @@ class URLpreview(callbacks.Plugin):  # pylint: disable=too-many-ancestors
             return  # No URL found
         domain = get_domain(url)
 
-        result = None
-        # Find extractor
-        if twitter.can_handle(domain):
-            if self.registryValue('twitter_enabled'):
-                token = self.registryValue('twitter_api_token')
-                result = twitter.handle(url, token)
-        elif youtube.can_handle(domain):
-            if self.registryValue('twitter_enabled'):
-                # token = self.registryValue('twitter_api_token')
-                result = youtube.handle(url)
+        preview = None
+        # Find previewer
+        previewer = self.previewers.get_previewer(domain)
+        if previewer is not None:
+            preview = previewer.get_preview(url)
+
         elif generic.can_handle(domain):
             if self.registryValue('generic_enabled'):
-                result = generic.handle(url)
-        else:
-            result = None
+                preview = generic.handle(url)
 
         # Handle the result
-        if result is None:
+        if preview is None:
             return
-        irc.queueMsg(ircmsgs.privmsg(channel, result))
+        irc.queueMsg(ircmsgs.privmsg(channel, preview))
 
 
 def find_url(text):

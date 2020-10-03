@@ -35,7 +35,10 @@ try:
 except ImportError:
     # Placeholder that allows to run the plugin on a bot
     # without the i18n module
-    def _(x): return x
+    def _(x):
+        return x
+
+from .previewer import PreviewerCollection
 
 
 def configure(advanced):
@@ -43,14 +46,11 @@ def configure(advanced):
     # a bool that specifies whether the user identified themself as an advanced
     # user or not.  You should effect your configuration by manipulating the
     # registry as appropriate.
-    from supybot.questions import something, yn  # expect, anything,
+    # from supybot.questions import something, yn, expect, anything,
     # General
     conf.registerPlugin('URLpreview', True)
-    # Twitter
-    if yn(_('Enable for Twitter links? (needs API key)')):
-        URLpreview.twitter_enable.setValue(True)
-        token = something(_('Enter Twitter OAuth Bearer token'))
-        URLpreview.twitter_api_token.setValue(token)
+    previewers = PreviewerCollection()
+    previewers.configure('URLpreview', advanced)
 
 
 URLpreview = conf.registerPlugin('URLpreview')
@@ -65,15 +65,10 @@ conf.registerGlobalValue(
     registry.Boolean(True, _('Enable generic (main) previewer?')))
 
 
-# Twitter
-conf.registerGlobalValue(
-    URLpreview, 'twitter_enabled',
-    registry.Boolean(False, _('Enable for Twitter links? (needs API key)')))
-conf.registerGlobalValue(
-    URLpreview, 'twitter_api_token',
-    registry.String('', _('Twitter API OAuth 2.0 Bearer token'), private=True))
-
 # Youtube
 conf.registerGlobalValue(
     URLpreview, 'youtube_enabled',
     registry.Boolean(False, _('Enable for YouTube links? (needs API key)')))
+
+previewers = PreviewerCollection()
+previewers.register_vars(URLpreview)

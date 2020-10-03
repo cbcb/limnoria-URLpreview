@@ -42,6 +42,9 @@ except ImportError:
 from supybot import log
 
 
+# The generic previewer isn't implemented as a Previewer instance
+# to ensure it's only used as the last resort.
+
 MAX_SIZE = 1 * 1024 * 1024  # Max size to download per attempt in bytes
 TIMEOUT = 10                # Timeout per attempt in seconds
 ATTEMPT_INSECURE = True     # Should a connection that fails because of

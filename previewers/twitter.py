@@ -30,10 +30,21 @@
 
 
 from datetime import datetime
+
 import regex as re
 import requests
 
-from supybot import log
+from supybot import conf, log, registry
+from supybot.questions import something, yn
+
+try:
+    from supybot.i18n import PluginInternationalization
+    _ = PluginInternationalization('URLpreview')
+except ImportError:
+    def _(x):
+        return x
+
+from URLpreview.previewer import Previewer
 
 # Optional support for humanize
 try:
@@ -43,31 +54,55 @@ except ImportError:
         return x
 
 
-def can_handle(domain):
-    return domain == 'twitter.com'
+class TwitterPreview(Previewer):
 
+    @staticmethod
+    def can_handle(domain):
+        return domain == 'twitter.com'
 
-def handle(url, token):
-    # Look for status (tweet) URL
-    # negative lookbehind to exclude sub-pages like …status/123/likes
-    status_pattern = re.compile(r'twitter.com/\w+/status/(\d+)(?!.*/\w+)')
-    status_id = status_pattern.search(url)
-    if status_id is not None:
-        preview = get_status(status_id.group(1), token)
-        if preview is None:
-            return None
-        return preview
-    # We found no status/tweet URL, but maybe still a twitter profile?
-    # Look for status (tweet) URL
-    # negative lookbehind to exclude urls like twitter.com/foo/likes
-    profile_pattern = re.compile(r'twitter.com/(\w+)(?!.*/\w+)')
-    handle = profile_pattern.search(url)
-    if handle is not None:
-        profile_info = get_profile(handle.group(1), token)
-        if profile_info is None:
-            return None
-        return profile_info
-    return None
+    @staticmethod
+    def get_preview(url):
+        if registry.registryValue('twitter_enabled'):
+            token = registry.registryValue('twitter_api_token')
+        else:
+            return
+        # Look for status (tweet) URL
+        # negative lookbehind to exclude sub-pages like …status/123/likes
+        status_pattern = re.compile(r'twitter.com/\w+/status/(\d+)(?!.*/\w+)')
+        status_id = status_pattern.search(url)
+        if status_id is not None:
+            preview = get_status(status_id.group(1), token)
+            if preview is None:
+                return None
+            return preview
+        # We found no status/tweet URL, but maybe still a twitter profile?
+        # Look for status (tweet) URL
+        # negative lookbehind to exclude urls like twitter.com/foo/likes
+        profile_pattern = re.compile(r'twitter.com/(\w+)(?!.*/\w+)')
+        handle = profile_pattern.search(url)
+        if handle is not None:
+            profile_info = get_profile(handle.group(1), token)
+            if profile_info is None:
+                return None
+            return profile_info
+        return None
+
+    def register_vars(self, plugin):
+        conf.registerGlobalValue(
+            plugin, 'twitter_enabled',
+            registry.Boolean(False,
+                             _('Enable for Twitter links? (needs API key)')))
+        conf.registerGlobalValue(
+            plugin, 'twitter_api_token',
+            registry.String('',
+                            _('Twitter API OAuth 2.0 Bearer token'),
+                            private=True,))
+
+    def configure(self, plugin, advanced):
+        if yn(_('Enable for Twitter links? (needs API key)')):
+            plugin.twitter_enable.setValue(True)
+            token = something(_('Enter Twitter OAuth Bearer token'))
+            plugin.twitter_api_token.setValue(token)
 
 
 def format_author(name, username, verified):
