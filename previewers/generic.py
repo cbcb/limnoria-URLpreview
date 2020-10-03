@@ -29,7 +29,7 @@
 ###
 
 from bs4 import BeautifulSoup
-from datetime import datetime
+from dateutil.parser import parse, ParserError
 import regex as re
 import requests
 
@@ -163,9 +163,9 @@ def get_meta(content):
     if soup.find('meta', {'name': 'date'}) is not None:
         date = soup.find('meta', {'name': 'date'})['content']
         try:
-            date = datetime.fromisoformat(date)
-        except ValueError:
-            pass  # malformed date, nothing we can do about it :(
+            date = parse(date)
+        except ParserError:
+            date = None  # malformed date, nothing we can do about it :(
 
     return {
         'title': sanitize(title),

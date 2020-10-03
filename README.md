@@ -24,12 +24,13 @@ previews Twitter Status ("Tweets") and Profiles links.
 # Requirements
 
 * [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/) to parse HTML with the `generic` extractor
+* [python-dateutil](https://github.com/dateutil/dateutil/) for parsing date strings
 * [regex](https://bitbucket.org/mrabarnett/mrab-regex/src/hg/) – because regular `re` doesn't handle unicode properly
 * Install [humanize](https://github.com/jmoiron/humanize/) to enable nicer timestamps, like "yesterday" instead of a date string.
 
 These can be installed with pip like this
 
-    pip install beautifulsoup4 humanize regex
+    pip install beautifulsoup4 humanize python-dateutil regex
 
 
 # Configuration variables
