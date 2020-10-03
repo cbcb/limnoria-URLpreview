@@ -133,9 +133,9 @@ def get_meta(content):
     date = None
     # Get title from meta tags
     for place in [
-        soup.find('meta', {'name': 'title'}),
         soup.find('meta', {'property': 'og:title'}),
         soup.find('meta', {'property': 'twitter:title'}),
+        soup.find('meta', {'name': 'title'}),
     ]:
         if place is not None:
             title = place['content']
@@ -146,9 +146,9 @@ def get_meta(content):
 
     # Get desc from meta tags
     for place in [
-        soup.find('meta', {'name': 'description'}),
         soup.find('meta', {'property': 'og:description'}),
         soup.find('meta', {'property': 'twitter:description'}),
+        soup.find('meta', {'name': 'description'}),
     ]:
         if place is not None:
             desc = place['content']
