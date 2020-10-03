@@ -38,6 +38,7 @@ import supybot
 from supybot import world
 
 from . import previewer
+from .previewers import generic
 # Use this for the version of this plugin.
 __version__ = '0.1'
 
@@ -62,7 +63,9 @@ reload(config)
 reload(plugin)
 # Add more reloads here if you add third-party modules and want them to be
 # reloaded when this plugin is reloaded.  Don't forget to import them as well!
+reload(generic)
 reload(previewer)
+
 
 if world.testing:
     from . import test

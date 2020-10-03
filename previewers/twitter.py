@@ -56,14 +56,12 @@ except ImportError:
 
 class TwitterPreview(Previewer):
 
-    @staticmethod
-    def can_handle(domain):
+    def can_handle(self, domain):
         return domain == 'twitter.com'
 
-    @staticmethod
-    def get_preview(url):
-        if registry.registryValue('twitter_enabled'):
-            token = registry.registryValue('twitter_api_token')
+    def get_preview(self, plugin, url):
+        if plugin.registryValue('twitter_enabled'):
+            token = plugin.registryValue('twitter_api_token')
         else:
             return
         # Look for status (tweet) URL

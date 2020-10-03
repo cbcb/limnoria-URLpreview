@@ -29,7 +29,7 @@
 ###
 
 from inspect import getmembers, isclass
-from importlib import import_module
+from importlib import import_module, reload
 from pkgutil import iter_modules
 
 
@@ -38,7 +38,7 @@ class Previewer:
         '''Returns True iff this Previewer can handle the domain.'''
         raise NotImplementedError
 
-    def get_preview(self, url):
+    def get_preview(self, plugin, url):
         '''Returns a preview message for the url,
            or None if the preview fails'''
         raise NotImplementedError
@@ -64,6 +64,8 @@ class PreviewerCollection:
                 package.__path__, package.__name__ + '.'):
             if not ispkg:
                 module = import_module(name)
+                # Reload for the case that we are reloaded
+                reload(module)
                 classes = getmembers(module, isclass)
                 for (_, c) in classes:
                     if c is not Previewer and issubclass(c, Previewer):

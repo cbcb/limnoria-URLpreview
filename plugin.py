@@ -69,7 +69,7 @@ class URLpreview(callbacks.Plugin):  # pylint: disable=too-many-ancestors
         # Find previewer
         previewer = self.previewers.get_previewer(domain)
         if previewer is not None:
-            preview = previewer.get_preview(url)
+            preview = previewer.get_preview(self, url)
 
         elif generic.can_handle(domain):
             if self.registryValue('generic_enabled'):
