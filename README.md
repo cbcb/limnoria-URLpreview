@@ -1,8 +1,8 @@
-This is plugin for the [Limnoria IRC Bot](https://github.com/ProgVal/Limnoria). It looks for URLs posted in the channel and responds with a preview of the content.
+This is a plugin for the [Limnoria IRC Bot](https://github.com/ProgVal/Limnoria). It looks for URLs posted in the channel and responds with a preview of the linked content.
 
-# Supported Previewers
+## Bundled Previewers
 
-## Generic
+### Generic
 
 This is the previewer for everything that hasn't a specific previewer.
 It assumes the URL points to an HTML document and searches for tags
@@ -14,17 +14,17 @@ Currently searches for name, date and description from these tags:
 * [Open Graph](https://ogp.me/) `<meta>` tags
 
 
-## Twitter
+### Twitter
 **Requires API key**
 
 previews Twitter Status ("Tweets") and Profiles links.
 
-## YouTube
+### YouTube
 **Requires API key**
 
 Previews YouTube video links.
 
-# Requirements
+## Requirements
 
 * [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/) to parse HTML with the `generic` extractor
 * [python-dateutil](https://github.com/dateutil/dateutil/) for parsing date strings
@@ -36,7 +36,7 @@ These can be installed with pip like this
     pip install beautifulsoup4 humanize python-dateutil regex
 
 
-# Configuration variables
+## Configuration variables
 | Name              | Type    | Scope   | Default | Description                                                                       |
 |-------------------|---------|---------|---------|-----------------------------------------------------------------------------------|
 | `enabled`         | Boolean | channel | `True`  | controls if the plugin is enabled for the channel                                 |
@@ -46,21 +46,21 @@ These can be installed with pip like this
 | `youtube_enabled` | Boolean | global  | `False` | controls if the `youtube` previewer is enabled                                    |
 | `youtube_api_key` | String  | global  | `""`    | holds the Google Simple API access key required for the `youtube` previewer       |
 
-# Limitations
+## Limitations
 
 * This plugin only looks at the first thing that looks vaguely like a URL per message, and gives up if that string can't be previewed.
 * some websites don't return anything helpful to a user agent that has JS disabled. Such websites can be added to the blacklist in `previewers/generic.py`.
 
-# Security
+## Security
 
 The generic extractor GETs arbitrary URLs.
 If the bot can access anything via http(s) that's sensitive and not available
 from the general internet, it might be possible for a user to trick it into doing something nasty.
 
-# Useful links
+## Useful links
 
 * https://modern.ircdocs.horse/formatting.html
 
-# Acknowledgments
+## Acknowledgments
 
 Loading of the previewers is based on Guido Diepen's blog post [Implementing a simple plugin framework in Python](https://www.guidodiepen.nl/2019/02/implementing-a-simple-plugin-framework-in-python/). Thank you!
