@@ -40,7 +40,7 @@ from supybot import world
 from . import previewer
 from .previewers import generic
 # Use this for the version of this plugin.
-__version__ = '0.1'
+__version__ = '1.0'
 
 # Replace this with an appropriate author or supybot.Author instance.
 __author__ = supybot.Author(name='Christian Baumhof')
