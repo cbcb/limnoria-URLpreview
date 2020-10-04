@@ -31,10 +31,13 @@ Previews YouTube video links.
 * [regex](https://bitbucket.org/mrabarnett/mrab-regex/src/hg/) – because regular `re` doesn't handle unicode properly
 * Install [humanize](https://github.com/jmoiron/humanize/) to enable nicer timestamps, like "yesterday" instead of a date string.
 
-These can be installed with pip like this
+## Installation
+
+Install the requirements in the environment where limnoria runs – if you use pip you can copy this:
 
     pip install beautifulsoup4 humanize python-dateutil regex
 
+Then place the files from this repo into `plugins/URLpreviewer` and tell your bot to `load URLpreviewer`.
 
 ## Configuration variables
 | Name              | Type    | Scope   | Default | Description                                                                       |
