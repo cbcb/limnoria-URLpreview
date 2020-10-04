@@ -100,7 +100,7 @@ class TwitterPreview(Previewer):
 
     def configure(self, plugin, advanced):
         if yn(_('Enable for Twitter links? (needs API key)')):
-            plugin.twitter_enable.setValue(True)
+            plugin.twitter_enabled.setValue(True)
             token = something(_('Enter Twitter OAuth Bearer token'))
             plugin.twitter_api_token.setValue(token)
 
