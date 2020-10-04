@@ -21,6 +21,11 @@ Currently searches for name, date and description from these tags:
 
 previews Twitter Status ("Tweets") and Profiles links.
 
+## YouTube
+**Requires API key**
+
+Previews YouTube video links.
+
 # Requirements
 
 * [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/) to parse HTML with the `generic` extractor
@@ -39,8 +44,9 @@ These can be installed with pip like this
 | `enabled`         | Boolean | channel | `True`  | controls if the plugin is enabled for the channel                                 |
 | `generic_enabled` | Boolean | global  | `True`  | controls if the `generic` previewer is enabled                                    |
 | `twitter_enabled` | Boolean | global  | `False` | controls if the `twitter` previewer is enabled                                    |
-| `twitter_api_key` | String  | global  | `""`    | holds the Twitter API OAuth 2.0 Bearer token required for the `twitter` extractor |
-| `youtube_enabled` | Boolean | global  | `False` | controls if the `youtube` previewer is enabled (not yet implemented)              |
+| `twitter_api_key` | String  | global  | `""`    | holds the Twitter API OAuth 2.0 Bearer token required for the `twitter` previewer |
+| `youtube_enabled` | Boolean | global  | `False` | controls if the `youtube` previewer is enabled                                    |
+| `youtube_api_key` | String  | global  | `""`    | holds the Google Simple API access key required for the `youtube` previewer       |
 
 # Limitations
 
