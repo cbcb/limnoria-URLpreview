@@ -28,7 +28,7 @@
 #     def configure(self, plugin, advanced):
 #         '''Called by config.py during the initial configure step'''
 #         if yn(_('Enable example example.com previewer?')):
-#             plugin.example_enable.setValue(True)
+#             plugin.example_enabled.setValue(True)
 #         return
 
 #     def register_vars(self, plugin):
