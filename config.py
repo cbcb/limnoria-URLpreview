@@ -50,7 +50,7 @@ def configure(advanced):
     # General
     conf.registerPlugin('URLpreview', True)
     previewers = PreviewerCollection()
-    previewers.configure('URLpreview', advanced)
+    previewers.configure(URLpreview, advanced)
 
 
 URLpreview = conf.registerPlugin('URLpreview')
