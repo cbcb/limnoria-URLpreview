@@ -1,6 +1,4 @@
-This plugin looks for an URL posted to channels and responds with a preview of the content.
-
-Only the first URL in each message is previewed.
+This is plugin for the [Limnoria IRC Bot](https://github.com/ProgVal/Limnoria). It looks for URLs posted in the channel and responds with a preview of the content.
 
 # Supported Previewers
 
