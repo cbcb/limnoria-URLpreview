@@ -160,12 +160,17 @@ def get_meta(content):
             break
 
     # Date handling from meta tag
-    if soup.find('meta', {'name': 'date'}) is not None:
-        date = soup.find('meta', {'name': 'date'})['content']
-        try:
-            date = parse(date)
-        except ParserError:
-            date = None  # malformed date, nothing we can do about it :(
+    for place in [
+        soup.find('meta', {'property': 'article:published_time'}),
+        soup.find('meta', {'name': 'date'}),
+    ]:
+        if place is not None:
+            try:
+                date = parse(place['content'])
+            except ParserError:
+                date = None  # malformed date, nothing we can do about it :(
+            if date is not None:
+                break
 
     return {
         'title': sanitize(title),
