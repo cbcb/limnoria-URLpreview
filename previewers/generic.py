@@ -213,7 +213,7 @@ def format_msg(secure, meta):
 
 def humanize_time(date):
     if date.utcoffset() is not None:
-        date = date + date.utcoffset()
+        date = date - date.utcoffset()
         date = date.replace(tzinfo=None)
     return naturaltime(date)
 
