@@ -12,6 +12,7 @@ Currently searches for name, date and description from these tags:
 * `<title>`, `<meta description="name">`, `<meta description="description">` and `<meta description="date">` tags
 * [Twitter Summary Cards](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary) `<meta>` tags
 * [Open Graph](https://ogp.me/) `<meta>` tags
+* [Dublin Core](https://www.dublincore.org) `<meta>` tags
 
 
 ### Twitter
