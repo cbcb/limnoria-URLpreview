@@ -73,6 +73,7 @@ DOMAIN_BLACKLIST = [
     'outline.com',
     'washingtonpost.com',
     'zeit.de',
+    'npr.org',
 ]
 
 

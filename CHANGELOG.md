@@ -1,6 +1,7 @@
 ## Development version
 * `generic` previewer now understands `<meta property="article:published_time" …>`  OpenGraph tags 
 * `generic` previewer now understands Dublin Core tags
+* Updated ignore list for `generic` previewer
 
 ## Version 1.0
 
