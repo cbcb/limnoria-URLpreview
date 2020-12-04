@@ -23,7 +23,11 @@ previews Twitter Status ("Tweets") and Profiles links.
 ### YouTube
 **Requires API key**
 
-Previews YouTube video links.
+previews YouTube video links.
+
+### NPR
+
+rewrites URLs to `npr.org` to `text.npr.org` equivalents to avoid the cookie consent page, then uses the `generic` previewer on them.
 
 ## Requirements
 
