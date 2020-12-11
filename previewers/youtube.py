@@ -29,6 +29,7 @@
 ###
 
 from dateutil.parser import parse, ParserError
+from enum import Enum
 import random
 import regex as re
 import requests
@@ -109,7 +110,7 @@ def find_video_id(url):
 
 
 def preview_video(token, video_id):
-    url = '%s?key=%s&id=%s&part=id,snippet,statistics' % \
+    url = '%s?key=%s&id=%s&part=id,snippet,statistics,liveStreamingDetails' % \
         (API_URL, token, video_id)
     r = requests.get(url, timeout=TIMEOUT)
     if r.status_code != 200:
@@ -133,6 +134,12 @@ def preview_video(token, video_id):
     return format_video(meta)
 
 
+class VideoState(Enum):
+    NORMAL = 1
+    LIVE = 2
+    UPCOMING = 3
+
+
 def get_video_metadata(json):
     """Returns the metadata we're interested in
     or None if <json> can't be parsed"""
@@ -148,12 +155,19 @@ def get_video_metadata(json):
             likes = stats['likeCount']
             dislikes = stats['dislikeCount']
             meta['rating'] = (int(likes), int(dislikes))
-        if 'liveBroadcastContent' in snippet and \
-                snippet['liveBroadcastContent'] == 'live':
-            meta['live'] = True
-        else:
-            meta['live'] = False
         meta['published'] = snippet['publishedAt']
+        if 'liveStreamingDetails' in json['items'][0]:
+            lsd = json['items'][0]['liveStreamingDetails']
+            if 'actualStartTime' in lsd:
+                meta['published'] = lsd['actualStartTime']
+            elif 'scheduledStartTime' in lsd:
+                meta['published'] = lsd['scheduledStartTime']
+        if snippet['liveBroadcastContent'] == 'live':
+            meta['state'] = VideoState.LIVE
+        elif snippet['liveBroadcastContent'] == 'upcoming':
+            meta['state'] = VideoState.UPCOMING
+        else:
+            meta['state'] = VideoState.NORMAL
     except KeyError as e:
         log.error('youtube.get_video_metadata:  %s' % repr(e))
     # Convert published timestamp to datetime object
@@ -175,7 +189,13 @@ def format_video(meta):
         rating = 'Rating: %s ' % bold(format_rating(meta['rating']))
     else:
         rating = ''
-    when = '🔴 LIVE' if meta['live'] else humanize_time(meta['published'])
+    if meta['state'] == VideoState.UPCOMING:
+        when = 'upcoming: %s' % humanize_time(meta['published'])
+        return '%s: %s (%s)' % (channel, bold(title), when)
+    elif meta['state'] == VideoState.LIVE:
+        when = '🔴 LIVE'
+    else:
+        when = humanize_time(meta['published'])
     return '%s: %s Views: %s %s(%s)' % \
         (channel, bold(title), bold(views), rating, when)
 
