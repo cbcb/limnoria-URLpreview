@@ -57,23 +57,24 @@ HEADERS = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0)' +
 
 DOMAIN_BLACKLIST = [
     # Blacklist domains that shouldn't be accessed or don't work
-    'localhost',
     'local',
+    'localhost',
     # RFC 2606
-    'invalid',
     'example',
+    'invalid',
     'test',
     # Previewers are available for these:
-    'twitter.com',
+    'npr.org',
     't.co',
-    'youtube.com',
+    'twitter.com',
     'youtu.be',
+    'youtube.com',
     # Add other non-working domains below:
     'blog.fefe.de',
+    'huffpost.com',
     'outline.com',
     'washingtonpost.com',
     'zeit.de',
-    'npr.org',
 ]
 
 
