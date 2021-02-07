@@ -9,6 +9,7 @@ It assumes the URL points to an HTML document and searches for tags
 like \<title\> and \<meta\> tags that describe the document.
 
 Currently searches for name, date and description from these tags:
+* [schema.org](https://schema.org/) data found in [json-ld](https://json-ld.org/) `<script>` tags
 * `<title>`, `<meta description="name">`, `<meta description="description">` and `<meta description="date">` tags
 * [Twitter Summary Cards](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary) `<meta>` tags
 * [Open Graph](https://ogp.me/) `<meta>` tags
@@ -30,7 +31,7 @@ previews YouTube video links.
 rewrites URLs to `npr.org` to `text.npr.org` equivalents to avoid the cookie consent page, then uses the `generic` previewer on them.
 
 ## Requirements
-
+* [requests](https://2.python-requests.org/en/master/) to connect
 * [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/) to parse HTML with the `generic` extractor
 * [python-dateutil](https://github.com/dateutil/dateutil/) for parsing date strings
 * [regex](https://bitbucket.org/mrabarnett/mrab-regex/src/hg/) – because regular `re` doesn't handle unicode properly

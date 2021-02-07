@@ -1,5 +1,6 @@
-## Development version
+## Version 1.1
 * added previewer for `npr.org`
+* `generic` previewer now understands json-ld
 * `generic` previewer now understands `<meta property="article:published_time" …>`  OpenGraph tags 
 * `generic` previewer now understands Dublin Core tags
 * Updated ignore list for `generic` previewer

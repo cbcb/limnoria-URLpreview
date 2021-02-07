@@ -30,6 +30,7 @@
 
 from bs4 import BeautifulSoup
 from dateutil.parser import parse, ParserError
+import json
 import regex as re
 import requests
 
@@ -135,9 +136,30 @@ def download(url, verify=True):
 
 def get_meta(content):
     soup = BeautifulSoup(content, 'html.parser')
-    title = None
-    desc = None
-    date = None
+    ld_json = soup.find('script', {'type': 'application/ld+json'})
+    if ld_json is not None:
+        try:
+            ld_json = json.loads(ld_json.contents[0])
+        except json.decoder.JSONDecodeError:
+            ld_json = None
+
+    title = get_title(ld_json, soup)
+    desc = get_desc(ld_json, soup)
+    date = get_date(ld_json, soup)
+
+    return {
+        'title': sanitize(title),
+        'desc': sanitize(desc),
+        'date': date,
+    }
+
+
+def get_title(ld_json, soup):
+    # Get title from JSON:
+    for prop in ['headline', 'alternativeHeadline', ]:
+        if ld_json is not None and prop in ld_json:
+            return ld_json[prop]
+
     # Get title from meta tags
     for place in [
         soup.find('meta', {'property': 'og:title'}),
@@ -146,12 +168,19 @@ def get_meta(content):
         soup.find('meta', {'name': 'DC.Title'}),
     ]:
         if place is not None:
-            title = place['content']
-            break
+            return place['content']
     # Last chance: title tag
-    if title is None and soup.title is not None:
-        title = soup.title.string
+    if soup.title is not None:
+        return soup.title.string
 
+    return None
+
+
+def get_desc(ld_json, soup):
+    # Get title from JSON:
+    for prop in ['description', 'abstract', ]:
+        if ld_json is not None and prop in ld_json:
+            return ld_json[prop]
     # Get desc from meta tags
     for place in [
         soup.find('meta', {'property': 'og:description'}),
@@ -160,9 +189,19 @@ def get_meta(content):
         soup.find('meta', {'name': 'DC.Description'}),
     ]:
         if place is not None:
-            desc = place['content']
-            break
+            return place['content']
 
+    return None
+
+
+def get_date(ld_json, soup):
+    # Get date from json
+    for prop in ['datePublished', 'dateCreated', 'dateModified', ]:
+        if ld_json is not None and prop in ld_json:
+            try:
+                return parse(ld_json[prop])
+            except ParserError:
+                pass
     # Date handling from meta tag
     for place in [
         soup.find('meta', {'property': 'article:published_time'}),
@@ -171,17 +210,11 @@ def get_meta(content):
     ]:
         if place is not None:
             try:
-                date = parse(place['content'])
+                return parse(place['content'])
             except ParserError:
-                date = None  # malformed date, nothing we can do about it :(
-            if date is not None:
-                break
+                pass
 
-    return {
-        'title': sanitize(title),
-        'desc': sanitize(desc),
-        'date': date,
-    }
+    return None
 
 
 def sanitize(string):
