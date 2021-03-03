@@ -1,3 +1,6 @@
+## Dev version
+* `generic` previewer: now favours other tags over json-ld due to some websites offering very poor data there
+
 ## Version 1.1
 * added previewer for `npr.org`
 * `generic` previewer now understands json-ld

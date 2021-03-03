@@ -155,11 +155,6 @@ def get_meta(content):
 
 
 def get_title(ld_json, soup):
-    # Get title from JSON:
-    for prop in ['headline', 'alternativeHeadline', ]:
-        if ld_json is not None and prop in ld_json:
-            return ld_json[prop]
-
     # Get title from meta tags
     for place in [
         soup.find('meta', {'property': 'og:title'}),
@@ -169,6 +164,11 @@ def get_title(ld_json, soup):
     ]:
         if place is not None:
             return place['content']
+
+    # Get title from JSON:
+    for prop in ['headline', 'alternativeHeadline', ]:
+        if ld_json is not None and prop in ld_json:
+            return ld_json[prop]
     # Last chance: title tag
     if soup.title is not None:
         return soup.title.string
@@ -177,10 +177,6 @@ def get_title(ld_json, soup):
 
 
 def get_desc(ld_json, soup):
-    # Get title from JSON:
-    for prop in ['description', 'abstract', ]:
-        if ld_json is not None and prop in ld_json:
-            return ld_json[prop]
     # Get desc from meta tags
     for place in [
         soup.find('meta', {'property': 'og:description'}),
@@ -190,18 +186,15 @@ def get_desc(ld_json, soup):
     ]:
         if place is not None:
             return place['content']
+    # Get title from JSON:
+    for prop in ['description', 'abstract', ]:
+        if ld_json is not None and prop in ld_json:
+            return ld_json[prop]
 
     return None
 
 
 def get_date(ld_json, soup):
-    # Get date from json
-    for prop in ['datePublished', 'dateCreated', 'dateModified', ]:
-        if ld_json is not None and prop in ld_json:
-            try:
-                return parse(ld_json[prop])
-            except ParserError:
-                pass
     # Date handling from meta tag
     for place in [
         soup.find('meta', {'property': 'article:published_time'}),
@@ -211,6 +204,13 @@ def get_date(ld_json, soup):
         if place is not None:
             try:
                 return parse(place['content'])
+            except ParserError:
+                pass
+    # Get date from json
+    for prop in ['datePublished', 'dateCreated', 'dateModified', ]:
+        if ld_json is not None and prop in ld_json:
+            try:
+                return parse(ld_json[prop])
             except ParserError:
                 pass
 
