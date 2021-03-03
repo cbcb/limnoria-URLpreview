@@ -1,5 +1,6 @@
 ## Dev version
 * `generic` previewer: now favours other tags over json-ld due to some websites offering very poor data there
+* `generic` previewer: now understands even more `meta`-tags related to dates
 
 ## Version 1.1
 * added previewer for `npr.org`

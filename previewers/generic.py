@@ -198,6 +198,8 @@ def get_date(ld_json, soup):
     # Date handling from meta tag
     for place in [
         soup.find('meta', {'property': 'article:published_time'}),
+        soup.find('meta', {'property': 'og:pubdate'}),
+        soup.find('meta', {'property': 'pubdate'}),
         soup.find('meta', {'name': 'date'}),
         soup.find('meta', {'name': 'DC.Date'}),
     ]:
