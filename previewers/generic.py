@@ -53,8 +53,9 @@ ATTEMPT_INSECURE = True     # Should a connection that fails because of
 MAX_TITLE_LENGTH = 140      # length after which the title will be cut
 MAX_DESC_LENGTH = 280       # length after which the description will be cut
 
-HEADERS = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0)' +
-           'Gecko/20100101 Firefox/81.0'}
+FAKE_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) ' + \
+          'Gecko/20100101 Firefox/81.0'
+HONEST_UA = 'limnoria-urlpreview-1'
 
 DOMAIN_BLACKLIST = [
     # Blacklist domains that shouldn't be accessed or don't work
@@ -77,6 +78,17 @@ DOMAIN_BLACKLIST = [
     'washingtonpost.com',
     'zeit.de',
 ]
+
+
+def get_user_agent(url):
+    # Spotify returns only the code to launch the app when
+    # seeing a desktop browser UA, so be honest with them
+    if '//open.spotify.com' in url:
+        return HONEST_UA
+    # For all other cases: Web Application Firewalls
+    # love to "protect" web pages by filtering user agents, so
+    # let's pretend we're using a desktop browser
+    return FAKE_UA
 
 
 def can_handle(domain):
@@ -118,8 +130,11 @@ def handle(url):
 
 
 def download(url, verify=True):
+    headers = {
+        'User-Agent': get_user_agent(url),
+    }
     r = requests.get(
-        url, headers=HEADERS, timeout=TIMEOUT, stream=True, verify=verify)
+        url, headers=headers, timeout=TIMEOUT, stream=True, verify=verify)
 
     data = []
     length = 0
@@ -167,7 +182,8 @@ def get_title(ld_json, soup):
 
     # Get title from JSON:
     for prop in ['headline', 'alternativeHeadline', ]:
-        if ld_json is not None and prop in ld_json:
+        if ld_json is not None and prop in ld_json \
+                      and ld_json[prop] is not None:
             return ld_json[prop]
     # Last chance: title tag
     if soup.title is not None:
@@ -188,7 +204,8 @@ def get_desc(ld_json, soup):
             return place['content']
     # Get title from JSON:
     for prop in ['description', 'abstract', ]:
-        if ld_json is not None and prop in ld_json:
+        if ld_json is not None and prop in ld_json \
+                      and ld_json[prop] is not None:
             return ld_json[prop]
 
     return None
@@ -210,7 +227,8 @@ def get_date(ld_json, soup):
                 pass
     # Get date from json
     for prop in ['datePublished', 'dateCreated', 'dateModified', ]:
-        if ld_json is not None and prop in ld_json:
+        if ld_json is not None and prop in ld_json \
+                      and ld_json[prop] is not None:
             try:
                 return parse(ld_json[prop])
             except ParserError:
