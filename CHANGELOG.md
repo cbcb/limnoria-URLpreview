@@ -1,8 +1,8 @@
 ## Dev version
 * `generic` previewer: now favours other tags over json-ld due to some websites offering very poor data there
 * `generic` previewer: now understands even more `meta`-tags related to dates
-* `generic` previewer: now works with spotify URLs by not pretending to be Firefox
 * `generic` previewer: corrected the assumption that pages wouldn't contain `null` values in ld-json
+* `generic` previewer: now tries several different user agents if no interesting metadata is found
 
 ## Version 1.1
 * added previewer for `npr.org`
