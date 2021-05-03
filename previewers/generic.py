@@ -46,16 +46,17 @@ from supybot import log
 # The generic previewer isn't implemented as a Previewer instance
 # to ensure it's only used as the last resort.
 
-MAX_SIZE = 1 * 1024 * 1024  # Max size to download per attempt in bytes
-TIMEOUT = 10                # Timeout per attempt in seconds
-ATTEMPT_INSECURE = True     # Should a connection that fails because of
-#                             certificate validation be retried?
-MAX_TITLE_LENGTH = 140      # length after which the title will be cut
-MAX_DESC_LENGTH = 280       # length after which the description will be cut
+MAX_SIZE = 1 * 1024 * 1024    # Max size to download per attempt in bytes
+TIMEOUT = 10                  # Timeout per attempt in seconds
+ATTEMPT_INSECURE = True       # Should a connection that fails because of
+#                               certificate validation be retried?
+MAX_TITLE_LENGTH = 140        # length after which the title will be cut
+MAX_DESCRIPTION_LENGTH = 280  # length after which the description will be cut
 
-FAKE_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) ' + \
+FIREFOX_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) ' + \
           'Gecko/20100101 Firefox/81.0'
-HONEST_UA = 'limnoria-urlpreview-1'
+HONEST_UA = 'limnoria-urlpreview-bot-1'
+GOOGLEBOT_UA = 'Googlebot'
 
 DOMAIN_BLACKLIST = [
     # Blacklist domains that shouldn't be accessed or don't work
@@ -73,22 +74,8 @@ DOMAIN_BLACKLIST = [
     'youtube.com',
     # Add other non-working domains below:
     'blog.fefe.de',
-    'huffpost.com',
     'outline.com',
-    'washingtonpost.com',
-    'zeit.de',
 ]
-
-
-def get_user_agent(url):
-    # Spotify returns only the code to launch the app when
-    # seeing a desktop browser UA, so be honest with them
-    if '//open.spotify.com' in url:
-        return HONEST_UA
-    # For all other cases: Web Application Firewalls
-    # love to "protect" web pages by filtering user agents, so
-    # let's pretend we're using a desktop browser
-    return FAKE_UA
 
 
 def can_handle(domain):
@@ -108,7 +95,7 @@ def handle(url):
     # Retry without verification?
     if ATTEMPT_INSECURE and not secure:
         try:
-            r = download(url, False)
+            r = download(url, verify=False)
         except Exception as e:
             log.info('URLpreview.generic.handle: trying "%s", exception %s' %
                      (url, repr(e)))
@@ -120,18 +107,51 @@ def handle(url):
     if not r.ok:
         return format_msg(secure, {
             'title': 'Error %d' % r.status_code,
-            'desc': r.reason,
+            'description': r.reason,
             'date': None,
         })
+
+    meta = get_meta(r.content)
+    # If meta['description'] or meta['title'] is None, try again with more
+    # honest user agent
+    # Rationale: many sites refuse to talk to non-browser UAs, but now
+    # some paywalls appear *only* for non-browser UAs.
+
+    # If meta['description'] and meta['title'] exist, then return early
+    if meta['title'] is not None and meta['description'] is not None:
+        return format_msg(secure, meta)
+
+    # Don't reattempt if TLS didn't work before and insecure attempts
+    # are switched off
+    if not secure and not ATTEMPT_INSECURE:
+        return format_msg(secure, meta)
+    try:
+        r = download(url, verify=secure, user_agent=HONEST_UA)
+    except Exception as e:
+        log.info('URLpreview.generic.handle: trying "%s", exception %s' %
+                 (url, repr(e)))
+
+    meta = get_meta(r.content)
+
+    if meta['title'] is not None and meta['description'] is not None:
+        return format_msg(secure, meta)
+
+    # Still no luck? Pretend we are Googlebot and hope the site
+    # isn't checking our reverse DNS as it should
+    try:
+        r = download(url, verify=secure, user_agent=GOOGLEBOT_UA)
+    except Exception as e:
+        log.info('URLpreview.generic.handle: trying "%s", exception %s' %
+                 (url, repr(e)))
 
     meta = get_meta(r.content)
 
     return format_msg(secure, meta)
 
 
-def download(url, verify=True):
+def download(url, verify=True, user_agent=FIREFOX_UA):
     headers = {
-        'User-Agent': get_user_agent(url),
+        'User-Agent': user_agent,
     }
     r = requests.get(
         url, headers=headers, timeout=TIMEOUT, stream=True, verify=verify)
@@ -159,12 +179,12 @@ def get_meta(content):
             ld_json = None
 
     title = get_title(ld_json, soup)
-    desc = get_desc(ld_json, soup)
+    description = get_description(ld_json, soup)
     date = get_date(ld_json, soup)
 
     return {
         'title': sanitize(title),
-        'desc': sanitize(desc),
+        'description': sanitize(description),
         'date': date,
     }
 
@@ -192,8 +212,8 @@ def get_title(ld_json, soup):
     return None
 
 
-def get_desc(ld_json, soup):
-    # Get desc from meta tags
+def get_description(ld_json, soup):
+    # Get description from meta tags
     for place in [
         soup.find('meta', {'property': 'og:description'}),
         soup.find('meta', {'property': 'twitter:description'}),
@@ -244,12 +264,15 @@ def sanitize(string):
     string = re.sub(r'\n+', ' ', string)
     # Remove excess whitespace
     string = re.sub(r'\s+', ' ', string)
-    return string.strip()
+    string = string.strip()
+    if string == '':
+        return None
+    return string
 
 
 def format_msg(secure, meta):
     title = meta['title']
-    desc = meta['desc']
+    description = meta['description']
     date = meta['date']
     if title is None:
         return
@@ -260,9 +283,9 @@ def format_msg(secure, meta):
     msg += '\x02%s\x02' % title[:MAX_TITLE_LENGTH]
     if len(title) > MAX_TITLE_LENGTH:
         msg += '…'
-    if desc is not None:
-        msg += ' ' + desc[:MAX_DESC_LENGTH]
-        if len(desc) > MAX_DESC_LENGTH:
+    if description is not None:
+        msg += ' ' + description[:MAX_DESCRIPTION_LENGTH]
+        if len(description) > MAX_DESCRIPTION_LENGTH:
             msg += '…'
     if date is not None:
         msg += ' (%s)' % humanize_time(date)
